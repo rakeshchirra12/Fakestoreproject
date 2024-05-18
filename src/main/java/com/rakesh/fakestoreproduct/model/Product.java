@@ -6,13 +6,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Product {
-    public Product(FakeProductDTO fakeProductDTO) {
-        this.id = fakeProductDTO.getId();
-        this.title = fakeProductDTO.getTitle();
-        this.description = fakeProductDTO.getDescription();
-        this.price = fakeProductDTO.getPrice();
-        this.image = fakeProductDTO.getImage();
-        this.category = new Category(fakeProductDTO.getCategory());
+    public Product(ProductDTO productDTO) {
+        this.id = productDTO.getId();
+        this.title = productDTO.getTitle();
+        this.description = productDTO.getDescription();
+        this.price = productDTO.getPrice();
+        this.image = productDTO.getImage();
+        this.category = new Category(productDTO.getCategory());
     }
 
     public Product() {

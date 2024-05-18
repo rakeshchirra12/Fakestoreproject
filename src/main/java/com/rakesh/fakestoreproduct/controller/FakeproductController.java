@@ -1,8 +1,11 @@
 package com.rakesh.fakestoreproduct.controller;
 
 import com.rakesh.fakestoreproduct.model.Product;
+import com.rakesh.fakestoreproduct.model.ProductDTO;
 import com.rakesh.fakestoreproduct.service.ProductService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -12,6 +15,11 @@ public class FakeproductController {
 
     public FakeproductController(ProductService productService) {
         this.productService = productService;
+    }
+
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
@@ -30,7 +38,7 @@ public class FakeproductController {
     }
 
     @PatchMapping("/{id}")
-    public Product updateProduct(@PathVariable long id, @RequestBody Product product) {
-        return productService.updateproduct(id, product);
+    public Product updateProduct(@PathVariable long id, @RequestBody ProductDTO productDTO) {
+        return productService.updateproduct(id,productDTO);
     }
 }

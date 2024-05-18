@@ -1,9 +1,15 @@
 package com.rakesh.fakestoreproduct.service;
 
-import com.rakesh.fakestoreproduct.model.FakeProductDTO;
+import com.rakesh.fakestoreproduct.model.ProductDTO;
 import com.rakesh.fakestoreproduct.model.Product;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FakeProductServiceImpl implements ProductService {
@@ -14,14 +20,14 @@ public class FakeProductServiceImpl implements ProductService {
         this.restTemplate = restTemplate;
     }
 
-    public Product getProductFromDTO(FakeProductDTO fakeProductDTO) {
-        return new Product(fakeProductDTO);
+    public Product getProductFromDTO(ProductDTO productDTO) {
+        return new Product(productDTO);
     }
 
     @Override
     public Product getProduct(Long id) {
-        FakeProductDTO fakeProductDTO = restTemplate.getForObject("https://fakestoreapi.com/products/" + id, FakeProductDTO.class);
-        return getProductFromDTO(fakeProductDTO);
+        ProductDTO productDTO = restTemplate.getForObject("https://fakestoreapi.com/products/" + id, ProductDTO.class);
+        return getProductFromDTO(productDTO);
     }
 
     @Override
@@ -30,8 +36,12 @@ public class FakeProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateproduct(Long id, Product product) {
-        return null;
+    public Product updateproduct(Long id, ProductDTO productDTO) {
+
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(productDTO, ProductDTO.class);
+        HttpMessageConverterExtractor<ProductDTO> responseExtractor =
+                new HttpMessageConverterExtractor<>(ProductDTO.class, restTemplate.getMessageConverters());
+        return new Product(restTemplate.execute("https://fakestoreapi.com/products/"+id, HttpMethod.PATCH, requestCallback, responseExtractor));
     }
 
     @Override
@@ -42,5 +52,15 @@ public class FakeProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
 
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        ProductDTO[] productDTOS = restTemplate.getForObject("https://fakestoreapi.com/products" , ProductDTO[].class);
+        List<Product> products = new ArrayList<>();
+        for(ProductDTO dto: productDTOS) {
+            products.add(getProductFromDTO(dto));
+        }
+        return products;
     }
 }
